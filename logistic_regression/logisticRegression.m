@@ -1,4 +1,10 @@
 function beta = logisticRegression(X, y, beta0, MaxIter, epsilon)
+%logisticRegression This MATLAB function fits the logistic regression model with (X, y), and returns the estimated parameters.
+%    X n * p dim matrix of covariates, do not contain a column of 1s as an intercept
+%    y n * 1 dim matrix of binary reponse
+%    beta0 (p + 1) dim vector of initial value for beta
+%    MaxIter maximum number of iterations, the default is 50
+%    epsilon maximum termination tolerance error, the default is 1e-8
 if nargin < 5, epsilon = 1e-8; end
 if nargin < 4, MaxIter = 50; end
 [n, ~] = size(X);
