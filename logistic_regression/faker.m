@@ -6,6 +6,9 @@ Args:
     n: sample size
     beta: logistic regression parameters
     seed: random seed
+Returns:
+    X: covariates, without intercept
+    y: binary reponse
 %}
 rng(seed);
 X = [randn(n, 1), rand(n, 1) < 0.5];
