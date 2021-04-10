@@ -1,11 +1,19 @@
 clc, clear
 
-n = 2000;
+% Parameters
+n = 200;
 beta = [0, 1, 1.5]';
-
-[X, y] = faker(n, beta, 1);
-
 beta0 = [0; 0; 0];
-MaxIter = 50;
-epsilon = 1e-8;
-betaHat = logisticRegression(X,y,beta0,MaxIter,epsilon)
+repeat = 100;
+
+% Simulation
+bias = zeros(repeat, 3);
+for seed = 1:repeat
+    [X, y] = faker(n, beta, seed);
+    betaHat = logisticRegression(X, y, beta0);
+    bias(seed, :) = betaHat - beta;
+end
+
+% Estimated Result
+mean(bias)
+std(bias)
