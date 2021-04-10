@@ -1,4 +1,15 @@
 function beta = logisticRegression(X, y, beta0, MaxIter, epsilon)
+% logisticRegression fits the logistic regression model with (X, y)
+%{
+Args:
+	X : covariates, do not contain a column of 1s as an intercept
+    y : binary reponse
+    beta0: initial parameters for logistic regression
+    MaxIter maximum number of iterations, the default is 50
+    epsilon maximum termination tolerance error, the default is 1e-8
+Returns:
+    beta: estimated parameters for logistic regression
+%}
 if nargin < 5, epsilon = 1e-8;end
 if nargin < 4, MaxIter = 50;end
 [n, ~] = size(X);
