@@ -1,0 +1,109 @@
+\documentclass[cn,mtpro2,12pt]{elegantpaper}
+
+\usepackage{amssymb}
+\usepackage{minted}
+\setminted{style=default,fontsize=\footnotesize,breaklines,breakanywhere=false,breakbytoken=false,breakbytokenanywhere=false,breakafter={.,},autogobble,numbersep=3mm,tabsize=4,linenos,frame=lines}
+
+\title{模拟：牛顿迭代法求解 Logistic 回归模型 \\ ------ 广义线性模型（2021，春）}
+\author{龚梓阳\quad 220071400021 \\ \email{meetziyang@outlook.com}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+考虑如下 Logistic 回归模型，
+\begin{equation*}
+    Y\sim\text{Bern}\left(g\left(\hat{\beta}_{0}+\beta_{1}X_{1}+\beta_{2}X_{2}\right)\right)
+\end{equation*}
+，其中 $g(z)=\frac{\exp(z)}{1+\exp(z)}$，$X_{1}\sim N(0,1)$，$X_{2}\sim\text{Bern}(0.5)$。
+
+试使用牛顿迭代法给出当 $\beta_{0}=0,\beta_{1}=1,\beta_{2}=1.5$ 时该模型的参数估计。
+
+\begin{proof}
+    参考课上所给定的符号与假定，
+    \begin{equation*}
+        Y_{i}\sim b\left(m_{i},\pi_{i}\right),i=1,2,\ldots,n
+    \end{equation*}
+    ，其中连接函数为 $\eta_{i}=g\left(\pi_{i}\right)=\log\left(\frac{\pi_{i}}{1-\pi_{i}}\right)=\sum_{j=1}^{p}\beta_{j}x_{ij}$，且 $E(Y_{i})=\mu_{i}=m_{i}\pi_{i}$。
+
+    因此，
+    \begin{equation*}
+        \begin{aligned}
+            \ell(\beta)= & \log[f(\pi\mid y)]=\sum^{n}l_{i}(\beta)                                                                                                                        \\
+            =            & \sum_{i=1}^{n}\left[y_{i}\log\left(\frac{\pi_{i}}{1-\pi_{i}}\right)+m_{i}\log\left(1-\pi_{i}\right)\right]+\sum_{i=1}^{n}\log\left[\binom{m_{i}}{y_{i}}\right]
+        \end{aligned}
+    \end{equation*}
+
+    对其求一阶导及二阶导可得
+    \begin{equation*}
+        \begin{aligned}
+            \frac{\partial\ell(\beta)}{\partial\beta_{r}}=                      & \sum_{i=1}^{n}\left(y_{i}-m_{i}\pi_{i}\right)x_{ir}           \\
+            \frac{\partial^{2}\ell(\beta)}{\partial\beta_{s}\partial\beta_{r}}= & -\sum_{i=1}^{n}m_{i}\pi_{i}\left(1-\pi_{i}\right)x_{is}x_{ir} \\
+        \end{aligned}
+    \end{equation*}
+
+    写成矩阵形式为
+    \begin{equation*}
+        \nabla\ell(\beta)=X^\prime(y-\mu),\quad -d^{2}\ell(\beta)=X^\prime WX
+    \end{equation*}
+    ，其中 $W=\operatorname{diag}\left(w_{1},\ldots,w_{n}\right)$，$w_{i}=m_{i}\pi_{i}\left(1-\pi_{i}\right)$。
+
+    因此，
+    \begin{equation*}
+        \begin{aligned}
+            \beta^{(t+1)} & =\beta^{(t)}+\left[-d^{2}\ell\left(\beta^{(t)}\right)\right]^{-1}\nabla\ell\left(\beta^{(t)}\right)                              \\
+                          & =\beta^{(t)}+\left(X^\prime W^{(t)} X\right)^{-1}X^\prime\left(y-\mu^{(t)}\right)                                                \\
+                          & =\left(X^\prime W^{(t)} X\right)^{-1}X^\prime W^{(t)}\left[X\beta^{(t)}+\left(W^{(t)}\right)^{-1}\left(y-\mu^{(t)}\right)\right] \\
+                          & =\left(X^\prime W^{(t)}X\right)^{-1}X^\prime W^{(t)}z^{(t)}
+        \end{aligned}
+    \end{equation*}
+    ，其中
+    \begin{gather*}
+        z^{(t)}=X\beta^{(t)}+\left(W^{(t)}\right)^{-1}\left(y-\mu^{(t)}\right)\\
+        W^{(t)}=\operatorname{diag}\left(w^{(t)}\right),w^{(t)}=m\pi^{(t)}\left(1-\pi^{(t)}\right)\\
+        \mu^{(t)}=m\pi^{(t)},\pi^{(t)}=\frac{\exp\left(X\beta^{(t)}\right)}{1+\exp\left(X\beta^{(t)}\right)}\\
+    \end{gather*}
+
+    在此处，牛顿迭代法等价于 Fisher's Scoring Method。
+\end{proof}
+
+在本题中，所生成的数据为未分组数据，即 $m_{i}=1,i=1,2,\ldots,n$。
+
+在此次，我们考虑在带有常数项与不带常数项、不同数据规模（200，2000）情况下重复进行 100 次估计的估计结果，结果如下：\footnote{本次模拟由 Matlab 实现，具体代码可见于 \href{https://github.com/SignorinoY/infestor}{https://github.com/SignorinoY/infestor}。}
+
+\begin{table}[htp]
+    \centering
+    \caption{带有常数项与不带常数项、不同数据规模下，牛顿迭代法的估计结果}
+    \begin{tabular}{cccc}
+        \toprule
+        $n$  & $\text{Bias}(\hat{\beta}_{0})$ (sd.) & $\text{Bias}(\hat{\beta}_{1})$ (sd.) & $\text{Bias}(\hat{\beta}_{2})$ (sd.) \\
+        \midrule
+        200  &                                      & 0.0331 (0.2270)                      & 0.1141 (0.3414)                      \\
+        200  & 0.0281 (0.2168)                      & 0.0385 (0.2287)                      & 0.0887 (0.4173)                      \\
+        2000 &                                      & -0.0050 (0.0672)                     & 0.0019 (0.0780)                      \\
+        2000 & 0.0027 (0.0668)                      & -0.0042 (0.0671)                     & -0.0005 (0.0982)                     \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+因此，我们可以得到如下结论：
+
+\begin{itemize}
+    \item 当 $\beta_{0}=0$ 时，估计时是否包括常数项对于估计结果影响不大；
+    \item 当样本增大时，对于参数 $\beta$ 的估计更加精确。
+\end{itemize}
+
+\begin{listing}[htp]
+    \inputminted{matlab}{faker.m}
+    \caption{仿真数据生成函数 \textit{faker.m}}
+\end{listing}
+\begin{listing}[htp]
+    \inputminted{matlab}{logisticRegression.m}
+    \caption{牛顿迭代法求解 Logistic 回归模型函数 \textit{logisticRegression.m}}
+\end{listing}
+\begin{listing}[htp]
+    \inputminted{matlab}{test.m}
+    \caption{在考虑常数项与不考虑常数项的情况下，重复进行 100 次模拟 \textit{test.m}}
+\end{listing}
+\end{document}
