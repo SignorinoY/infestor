@@ -8,7 +8,6 @@ repeat = 100;
 % Parameters
 beta = [0, 1, 1.5]';
 beta0 = [0; 0; 0];
-
 % Simulation
 bias = zeros(repeat, 3);
 for seed = 1:repeat
@@ -16,7 +15,6 @@ for seed = 1:repeat
     betaHat = logisticRegression(X, y, beta0, true);
     bias(seed, :) = betaHat - beta;
 end
-
 % Estimated Result
 mean(bias)
 std(bias)
@@ -25,7 +23,6 @@ std(bias)
 % Parameters
 beta = [0, 1, 1.5]';
 beta0 = [0; 0];
-
 % Simulation
 bias = zeros(repeat, 2);
 for seed = 1:repeat
@@ -33,7 +30,6 @@ for seed = 1:repeat
     betaHat = logisticRegression(X, y, beta0, false);
     bias(seed, :) = betaHat - beta(2:3);
 end
-
 % Estimated Result
 mean(bias)
 std(bias)
